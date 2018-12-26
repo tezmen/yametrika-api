@@ -1,7 +1,6 @@
 ﻿# coding: utf-8
 
 import json
-
 from .client import APIClient
 
 
@@ -44,7 +43,7 @@ class APIException(Exception):
 
 class JSON2Obj(object):
     def __init__(self, page):
-        self.__dict__ = json.loads(page.decode())
+        self.__dict__ = json.loads(page)
 
 
 class Metrika(object):
@@ -111,16 +110,7 @@ class Metrika(object):
         self._code = code
 
         self._client = APIClient()
-        self._client.user_agent = 'yametrikapy'
         self._data = ''
-
-    @property
-    def user_agent(self):
-        return self._client.user_agent
-
-    @user_agent.setter
-    def user_agent(self, user_agent):
-        self._client.user_agent = user_agent
 
     def _get_response_object(f):
         def wrapper(self):
@@ -166,26 +156,16 @@ class Metrika(object):
 
         return wrapper
 
-    def _headers(self):
-        header = {
-            'User-Agent': self.user_agent,
-            'Accept': 'application/x-yametrika+json',
-            'Accept-Language': 'ru,en-us;q=0.7,en;q=0.3',
-            'Accept-Encoding': 'gzip,deflate',
-            'Accept-Charset': 'utf-8;q=0.7,*;q=0.7',
-            'Keep-Alive': '300',
-            'Connection': 'keep-alive',
-            'Authorization': 'OAuth %s' % self._token
-        }
-        return header
-
     @_get_response_object
     def _response_handle(self, obj):
         return obj
 
     @_auth
     def _get_data(self, method, uri, params=None):
-        self._data = self._client.request(method, uri, params=params, headers=self._headers())
+        header = {
+            'Authorization': 'OAuth %s' % self._token
+        }
+        self._data = self._client.request(method, uri, params=params, headers=header)
 
         if self._client.status == 400:
             raise BadRequestError('%d %s' % (self._client.status, 'Check your request'))
@@ -279,12 +259,10 @@ class Metrika(object):
         params = {'field': field, 'callback': callback}
         return self._get_data('GET', uri, params)
 
-    def add_counter(self, name, site, **kwargs):
+    def add_counter(self, **kwargs):
         """ Create a counter with the specified parameters
         """
         uri = self._get_uri(self.COUNTERS)
-        kwargs['name'] = name
-        kwargs['site'] = site
         params = {'counter': kwargs}
         return self._get_data('POST', uri, json.dumps(params))
 
@@ -308,7 +286,6 @@ class Metrika(object):
         return self._get_data('POST', uri)
 
     # Goals
-
     def goals(self, counter_id, callback='', sorted=False, use_deleted=False):
         """ Return information about the goals of counter
         """
@@ -585,7 +562,6 @@ class Metrika(object):
             ! If the input structure of the specified user's login,
             not included in the current list of accounts, full access to the
             account of this user NOT available.
-
         :param accounts: list
         :return:
         """
