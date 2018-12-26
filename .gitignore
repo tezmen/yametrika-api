@@ -1,4 +1,5 @@
 .idea
 *.pyc
-
-secret_settings.py
+.DS_Store
+__pycache__
+/venv
