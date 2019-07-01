@@ -17,9 +17,9 @@ class APIClient(object):
 			headers = self.HEADERS
 
 		if str(method).upper() == 'POST':
-			r = requests.post(url, headers=headers, data=params, timeout=10)
+			r = requests.post(url, headers=headers, data=params, timeout=120)
 		else:
-			r = requests.get(url, headers=headers, params=params, timeout=10)
+			r = requests.get(url, headers=headers, params=params, timeout=120)
 
 		self.status = r.status_code
 		return r.text
