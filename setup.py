@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='yametrikapy',
-    version=__import__('yametrikapy').__version__,
+    version='2.2.1',
     license='MIT',
     keywords='yandex metrika api',
     author='Sergey Pikhovkin',
